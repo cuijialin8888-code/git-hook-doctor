@@ -52,4 +52,5 @@ jobs:
           output: action-report.json
           fail-on: error
       - name: Verify action report contract
-        run: python -c "import json,pathlib; p=json.loads(pathlib.Path('action-report.json').read_text()); assert p['safety'] == {'hooks_executed': False, 'read_only': True}"
+        run: |
+          python -c "import json,pathlib; p=json.loads(pathlib.Path('action-report.json').read_text()); assert p['safety'] == {'hooks_executed': False, 'read_only': True}"
