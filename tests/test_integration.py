@@ -22,7 +22,12 @@ class DiagnosisIntegrationTests(GitRepositoryTestCase):
     def test_explain_missing_hook_fails_with_exact_path(self) -> None:
         report = diagnose(self.repo, events=["pre-commit"])
         self.assertIn("GHD003", self.codes(report))
-        self.assertEqual(self.repo / ".git" / "hooks" / "pre-commit", report.hooks[0].path)
+        expected = self.repo / ".git" / "hooks" / "pre-commit"
+        actual = report.hooks[0].path
+        self.assertIsNotNone(actual)
+        assert actual is not None
+        self.assertEqual(expected.name, actual.name)
+        self.assertTrue(os.path.samefile(expected.parent, actual.parent))
 
     def test_valid_hook_is_ready(self) -> None:
         self.write_hook("pre-commit", b"#!/usr/bin/env python\nprint('ok')\n")

@@ -20,7 +20,7 @@ inputs:
     required: false
     default: ""
   format:
-    description: Report format: text, json, markdown, or sarif.
+    description: "Report format: text, json, markdown, or sarif."
     required: false
     default: text
   output:
@@ -28,7 +28,7 @@ inputs:
     required: false
     default: ""
   fail-on:
-    description: Failure threshold: never, warning, or error.
+    description: "Failure threshold: never, warning, or error."
     required: false
     default: error
 
