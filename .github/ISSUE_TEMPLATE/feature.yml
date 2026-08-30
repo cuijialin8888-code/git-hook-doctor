@@ -1,0 +1,39 @@
+name: Rule or feature request
+description: Propose a bounded diagnostic supported by reproducible evidence.
+title: "[Proposal]: "
+labels: [enhancement, triage]
+body:
+  - type: textarea
+    id: problem
+    attributes:
+      label: Concrete failure
+      description: What hook fails to start, and what exact evidence distinguishes the cause?
+    validations:
+      required: true
+  - type: textarea
+    id: reproduction
+    attributes:
+      label: Minimal synthetic reproduction
+      render: shell
+    validations:
+      required: true
+  - type: textarea
+    id: scope
+    attributes:
+      label: Affected platforms and Git versions
+    validations:
+      required: true
+  - type: textarea
+    id: false_positive
+    attributes:
+      label: False-positive boundary
+      description: When would the same evidence not mean the hook is broken?
+    validations:
+      required: true
+  - type: checkboxes
+    id: boundary
+    attributes:
+      label: Project boundary
+      options:
+        - label: The proposal can remain read-only and does not need to execute a hook.
+          required: true

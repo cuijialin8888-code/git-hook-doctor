@@ -1,0 +1,63 @@
+name: Bug report
+description: Report an incorrect diagnosis, crash, or false positive.
+title: "[Bug]: "
+labels: [bug, triage]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Use a synthetic repository whenever possible. Remove secrets and proprietary hook contents before posting.
+  - type: input
+    id: version
+    attributes:
+      label: Git Hook Doctor version
+      placeholder: 0.1.0
+    validations:
+      required: true
+  - type: input
+    id: environment
+    attributes:
+      label: Environment
+      description: Operating system, Python version, Git version, and shell/GUI client.
+      placeholder: Windows 11; Python 3.12; Git 2.55.0; PowerShell 7
+    validations:
+      required: true
+  - type: dropdown
+    id: source
+    attributes:
+      label: Hook source
+      options:
+        - Traditional hook file
+        - Git 2.54+ configured hook
+        - Both
+        - Unsure
+    validations:
+      required: true
+  - type: textarea
+    id: reproduction
+    attributes:
+      label: Minimal reproduction
+      description: Include setup commands and the exact Git Hook Doctor command. Do not include secrets.
+      render: shell
+    validations:
+      required: true
+  - type: textarea
+    id: output
+    attributes:
+      label: Actual output
+      render: text
+    validations:
+      required: true
+  - type: textarea
+    id: expected
+    attributes:
+      label: Expected diagnosis
+    validations:
+      required: true
+  - type: checkboxes
+    id: safety
+    attributes:
+      label: Safety check
+      options:
+        - label: I removed credentials, private paths, and proprietary hook content.
+          required: true

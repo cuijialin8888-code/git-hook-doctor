@@ -1,0 +1,7 @@
+- id: git-hook-doctor
+  name: Git Hook Doctor
+  description: Explain why configured and traditional Git hooks will or will not run.
+  entry: git-hook-doctor check --fail-on error --color never
+  language: python
+  pass_filenames: false
+  always_run: true

@@ -1,0 +1,44 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="640" viewBox="0 0 1200 640" role="img" aria-labelledby="title desc">
+  <title id="title">Git Hook Doctor terminal demo</title>
+  <desc id="desc">The tool explains that a pre-commit hook in a linked worktree is blocked by CRLF and a missing interpreter.</desc>
+  <defs>
+    <linearGradient id="canvas" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#0c162b"/>
+      <stop offset="1" stop-color="#070b14"/>
+    </linearGradient>
+    <filter id="card" x="-10%" y="-10%" width="120%" height="130%">
+      <feDropShadow dx="0" dy="18" stdDeviation="22" flood-color="#02040a" flood-opacity=".65"/>
+    </filter>
+  </defs>
+  <rect width="1200" height="640" rx="28" fill="url(#canvas)"/>
+  <circle cx="1080" cy="92" r="142" fill="#0ea5e9" opacity=".07"/>
+  <circle cx="95" cy="580" r="180" fill="#22c55e" opacity=".045"/>
+  <rect x="70" y="54" width="1060" height="532" rx="20" fill="#0a0f1c" stroke="#263552" stroke-width="2" filter="url(#card)"/>
+  <path d="M70 110h1060" stroke="#263552" stroke-width="2"/>
+  <circle cx="106" cy="82" r="8" fill="#fb7185"/>
+  <circle cx="134" cy="82" r="8" fill="#fbbf24"/>
+  <circle cx="162" cy="82" r="8" fill="#4ade80"/>
+  <text x="600" y="88" fill="#8291ad" font-family="ui-monospace, SFMono-Regular, Consolas, monospace" font-size="18" text-anchor="middle">git-hook-doctor</text>
+
+  <g font-family="ui-monospace, SFMono-Regular, Consolas, monospace" font-size="22">
+    <text x="104" y="153" fill="#4ade80">$</text>
+    <text x="132" y="153" fill="#e6edf7">git-hook-doctor explain pre-commit</text>
+
+    <text x="104" y="201" fill="#67e8f9" font-weight="700">Git Hook Doctor 0.1.0</text>
+    <text x="104" y="239" fill="#93a4bf">Git: 2.55.0 · linked worktree</text>
+    <text x="104" y="275" fill="#93a4bf">Hook directory: repo/.worktrees/feature/.githooks</text>
+    <text x="104" y="311" fill="#93a4bf">Safety: read-only; no hooks executed</text>
+
+    <text x="104" y="365" fill="#fb7185" font-weight="700">[BLOCKED] pre-commit</text>
+    <text x="104" y="403" fill="#fbbf24">ERROR GHD010</text>
+    <text x="294" y="403" fill="#e6edf7">Shebang uses CRLF line endings</text>
+    <text x="132" y="437" fill="#93a4bf">The carriage return becomes part of the interpreter name.</text>
+
+    <text x="104" y="485" fill="#fbbf24">ERROR GHD012</text>
+    <text x="294" y="485" fill="#e6edf7">Hook interpreter is unavailable</text>
+    <text x="132" y="519" fill="#93a4bf">'python3' cannot be resolved where Git will start the hook.</text>
+
+    <text x="104" y="558" fill="#67e8f9">Fix:</text>
+    <text x="165" y="558" fill="#e6edf7">store hooks as LF and install the interpreter.</text>
+  </g>
+</svg>

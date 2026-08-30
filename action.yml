@@ -1,0 +1,59 @@
+name: Git Hook Doctor
+description: Explain why Git hooks will or will not run without executing them.
+author: Jialin Cui
+
+branding:
+  icon: activity
+  color: blue
+
+inputs:
+  repo:
+    description: Repository path to inspect.
+    required: false
+    default: .
+  git:
+    description: Git executable to inspect.
+    required: false
+    default: git
+  events:
+    description: Space-separated hook events. Empty means discover installed hooks.
+    required: false
+    default: ""
+  format:
+    description: Report format: text, json, markdown, or sarif.
+    required: false
+    default: text
+  output:
+    description: Optional report file path.
+    required: false
+    default: ""
+  fail-on:
+    description: Failure threshold: never, warning, or error.
+    required: false
+    default: error
+
+runs:
+  using: composite
+  steps:
+    - name: Install Git Hook Doctor
+      shell: bash
+      run: python -m pip install --disable-pip-version-check "${GITHUB_ACTION_PATH}"
+    - name: Diagnose Git hooks
+      shell: bash
+      env:
+        GHD_REPO: ${{ inputs.repo }}
+        GHD_GIT: ${{ inputs.git }}
+        GHD_EVENTS: ${{ inputs.events }}
+        GHD_FORMAT: ${{ inputs.format }}
+        GHD_OUTPUT: ${{ inputs.output }}
+        GHD_FAIL_ON: ${{ inputs['fail-on'] }}
+      run: |
+        args=(check --repo "$GHD_REPO" --git "$GHD_GIT" --format "$GHD_FORMAT" --fail-on "$GHD_FAIL_ON" --color never)
+        if [[ -n "$GHD_OUTPUT" ]]; then
+          args+=(--output "$GHD_OUTPUT")
+        fi
+        if [[ -n "$GHD_EVENTS" ]]; then
+          read -r -a events <<< "$GHD_EVENTS"
+          args+=("${events[@]}")
+        fi
+        git-hook-doctor "${args[@]}"

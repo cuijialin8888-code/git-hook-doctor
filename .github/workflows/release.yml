@@ -1,0 +1,49 @@
+name: Release
+
+on:
+  push:
+    tags:
+      - "v*"
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7.0.0
+        with:
+          python-version: "3.12"
+      - name: Verify tag matches package version
+        shell: bash
+        run: |
+          PACKAGE_VERSION="$(python -c 'import pathlib,re; text=pathlib.Path("src/git_hook_doctor/__init__.py").read_text(); print(re.search(r"__version__ = \"([^\"]+)\"", text).group(1))')"
+          test "v${PACKAGE_VERSION}" = "${GITHUB_REF_NAME}"
+      - name: Test source tree
+        run: |
+          python -m pip install -e .
+          python -m unittest discover -s tests -v
+          python -m compileall -q src tests examples
+      - name: Build release artifacts
+        run: |
+          python -m pip install build
+          python -m build
+      - name: Smoke-test built wheel
+        shell: bash
+        run: |
+          python -m venv .release-venv
+          . .release-venv/bin/activate
+          python -m pip install dist/*.whl
+          git-hook-doctor --version
+          git-hook-doctor check --fail-on error --color never
+      - name: Generate checksums
+        shell: bash
+        run: |
+          cd dist
+          sha256sum *.whl *.tar.gz > SHA256SUMS
+      - name: Create GitHub release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: gh release create "${GITHUB_REF_NAME}" dist/* --verify-tag --generate-notes --title "Git Hook Doctor ${GITHUB_REF_NAME}"

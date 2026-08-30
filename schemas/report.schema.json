@@ -1,0 +1,77 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://raw.githubusercontent.com/cuijialin8888-code/git-hook-doctor/main/schemas/report.schema.json",
+  "title": "Git Hook Doctor report",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "safety",
+    "repository",
+    "core_hooks_path",
+    "requested_events",
+    "summary",
+    "hooks",
+    "findings"
+  ],
+  "properties": {
+    "schema_version": { "const": "1" },
+    "safety": {
+      "type": "object",
+      "required": ["read_only", "hooks_executed"],
+      "properties": {
+        "read_only": { "const": true },
+        "hooks_executed": { "const": false }
+      }
+    },
+    "repository": {
+      "type": "object",
+      "required": ["root", "git_dir", "common_dir", "hooks_dir", "git_version", "is_bare", "is_linked_worktree"]
+    },
+    "core_hooks_path": {
+      "oneOf": [
+        { "type": "null" },
+        { "$ref": "#/$defs/configEntry" }
+      ]
+    },
+    "requested_events": {
+      "type": "array",
+      "items": { "type": "string" }
+    },
+    "summary": { "type": "object" },
+    "hooks": {
+      "type": "array",
+      "items": { "type": "object" }
+    },
+    "findings": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["code", "severity", "title", "message", "remediation", "path", "line", "hook", "evidence"],
+        "properties": {
+          "code": { "pattern": "^GHD[0-9]{3}$" },
+          "severity": { "enum": ["info", "warning", "error"] },
+          "title": { "type": "string" },
+          "message": { "type": "string" },
+          "remediation": { "type": "string" },
+          "path": { "type": ["string", "null"] },
+          "line": { "type": ["integer", "null"], "minimum": 1 },
+          "hook": { "type": ["string", "null"] },
+          "evidence": { "type": "object" }
+        }
+      }
+    }
+  },
+  "$defs": {
+    "configEntry": {
+      "type": "object",
+      "required": ["scope", "origin", "key", "value"],
+      "properties": {
+        "scope": { "type": "string" },
+        "origin": { "type": "string" },
+        "key": { "type": "string" },
+        "value": { "type": "string" }
+      }
+    }
+  }
+}

@@ -1,0 +1,28 @@
+name: Git hook diagnostics
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+permissions:
+  contents: read
+  security-events: write
+
+jobs:
+  hooks:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-python@v7
+        with:
+          python-version: "3.12"
+      - uses: cuijialin8888-code/git-hook-doctor@v0.1.0
+        with:
+          format: sarif
+          output: git-hook-doctor.sarif
+          fail-on: error
+      - uses: github/codeql-action/upload-sarif@v4
+        if: always()
+        with:
+          sarif_file: git-hook-doctor.sarif

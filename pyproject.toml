@@ -1,0 +1,42 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "git-hook-doctor"
+version = "0.1.0"
+description = "Explain why a Git hook will—or won't—run."
+readme = "README.md"
+requires-python = ">=3.10"
+license = { text = "MIT" }
+authors = [{ name = "Jialin Cui" }]
+keywords = ["git", "hooks", "diagnostics", "worktree", "developer-tools", "cli"]
+classifiers = [
+  "Development Status :: 3 - Alpha",
+  "Environment :: Console",
+  "License :: OSI Approved :: MIT License",
+  "Operating System :: OS Independent",
+  "Programming Language :: Python :: 3",
+  "Programming Language :: Python :: 3 :: Only",
+  "Programming Language :: Python :: 3.10",
+  "Programming Language :: Python :: 3.11",
+  "Programming Language :: Python :: 3.12",
+  "Programming Language :: Python :: 3.13",
+  "Programming Language :: Python :: 3.14",
+  "Topic :: Software Development :: Version Control :: Git",
+]
+
+[project.urls]
+Homepage = "https://github.com/cuijialin8888-code/git-hook-doctor"
+Documentation = "https://github.com/cuijialin8888-code/git-hook-doctor#readme"
+Issues = "https://github.com/cuijialin8888-code/git-hook-doctor/issues"
+Changelog = "https://github.com/cuijialin8888-code/git-hook-doctor/blob/main/CHANGELOG.md"
+
+[project.scripts]
+git-hook-doctor = "git_hook_doctor.cli:main"
+
+[tool.setuptools]
+package-dir = { "" = "src" }
+
+[tool.setuptools.packages.find]
+where = ["src"]
