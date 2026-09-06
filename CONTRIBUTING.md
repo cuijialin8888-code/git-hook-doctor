@@ -30,6 +30,12 @@ python -m pip wheel . --no-deps --wheel-dir dist-local
 git diff --check
 ```
 
+## Routine maintenance
+
+- Update GitHub Actions only to verified upstream immutable commit pins, then confirm the public cross-platform CI result.
+- Preserve static, read-only hook diagnosis: never execute a hook, turn the tool into a hook manager, or expose hook command bodies in reports.
+- Keep every maintenance fixture synthetic and inert so the test suite cannot run untrusted repository content.
+
 ## Pull request checklist
 
 - Add or update a synthetic test fixture.
