@@ -37,16 +37,22 @@ class RepositoryQualityTests(unittest.TestCase):
                     missing.append(f"{document.relative_to(ROOT)} -> {target}")
         self.assertEqual([], missing)
 
-    def test_workflow_actions_are_immutably_pinned(self) -> None:
+    def test_copyable_action_references_are_immutably_pinned(self) -> None:
+        sources = [
+            *(ROOT / ".github" / "workflows").glob("*.yml"),
+            ROOT / "examples" / "github-actions.yml",
+            ROOT / "README.md",
+        ]
         unpinned: list[str] = []
-        for workflow in (ROOT / ".github" / "workflows").glob("*.yml"):
-            for line_number, line in enumerate(workflow.read_text(encoding="utf-8").splitlines(), 1):
+        for source in sources:
+            for line_number, line in enumerate(source.read_text(encoding="utf-8").splitlines(), 1):
                 match = re.search(r"uses:\s*([^\s#]+)", line)
                 if not match or match.group(1).startswith("./"):
                     continue
                 reference = match.group(1).rsplit("@", 1)[-1]
                 if not re.fullmatch(r"[0-9a-f]{40}", reference):
-                    unpinned.append(f"{workflow.name}:{line_number} {match.group(1)}")
+                    relative = source.relative_to(ROOT)
+                    unpinned.append(f"{relative}:{line_number} {match.group(1)}")
         self.assertEqual([], unpinned)
 
     def test_png_assets_have_expected_dimensions(self) -> None:

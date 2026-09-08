@@ -4,6 +4,10 @@ All notable changes use [Keep a Changelog](https://keepachangelog.com/en/1.1.0/)
 
 ## [Unreleased]
 
+### Security
+
+- Pin every Action in copyable workflow examples to an immutable commit SHA and test the invariant.
+
 ## [0.1.0] - 2026-08-31
 
 ### Added
