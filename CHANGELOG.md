@@ -4,6 +4,10 @@ All notable changes use [Keep a Changelog](https://keepachangelog.com/en/1.1.0/)
 
 ## [Unreleased]
 
+### Added
+
+- An evidence-first workflow for traditional and configured hook diagnosis.
+
 ### Security
 
 - Pin every Action in copyable workflow examples to an immutable commit SHA and test the invariant.

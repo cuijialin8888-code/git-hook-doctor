@@ -150,6 +150,7 @@ Static inspection cannot reproduce a GUI client's private environment, a future 
 - [Configured hooks in Git 2.54+](docs/configured-hooks.md)
 - [Known limits and non-goals](docs/limitations.md)
 - [JSON report schema](schemas/report.schema.json)
+- [Diagnostic workflow](docs/diagnostic-workflow.md)
 - [Chinese README / 中文说明](README.zh-CN.md)
 
 ## Contributing
