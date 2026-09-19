@@ -6,7 +6,13 @@ import unittest
 from pathlib import Path
 
 from git_hook_doctor.models import Finding, HookResult, Report, RepositoryInfo, Severity
-from git_hook_doctor.reporters import json_report, markdown_report, sarif_report, text_report
+from git_hook_doctor.reporters import (
+    github_report,
+    json_report,
+    markdown_report,
+    sarif_report,
+    text_report,
+)
 
 
 class ReporterTests(unittest.TestCase):
@@ -62,6 +68,14 @@ class ReporterTests(unittest.TestCase):
     def test_text_and_markdown_include_safety_boundary(self) -> None:
         self.assertIn("no hooks executed", text_report(self.report))
         self.assertIn("no hooks executed", markdown_report(self.report))
+
+    def test_github_report_emits_escaped_native_annotation(self) -> None:
+        output = github_report(self.report)
+        self.assertIn(
+            "::error file=.git/hooks/pre-commit,line=1,title=GHD010::",
+            output,
+        )
+        self.assertIn("read-only, no hooks executed", output)
 
 
 if __name__ == "__main__":

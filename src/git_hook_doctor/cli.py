@@ -27,7 +27,7 @@ def _common_parser() -> argparse.ArgumentParser:
     )
     common.add_argument(
         "--format",
-        choices=("text", "json", "markdown", "sarif"),
+        choices=("text", "json", "markdown", "sarif", "github"),
         default="text",
         help="report format (default: text)",
     )

@@ -216,6 +216,46 @@ def sarif_report(report: Report) -> str:
     return json.dumps(document, indent=2, ensure_ascii=False, sort_keys=True) + "\n"
 
 
+def github_report(report: Report) -> str:
+    """Render workflow-command annotations without exposing hook commands."""
+
+    levels = {Severity.ERROR: "error", Severity.WARNING: "warning", Severity.INFO: "notice"}
+    lines: list[str] = []
+    for finding in report.findings:
+        properties: list[str] = []
+        if finding.path is not None:
+            properties.append(
+                "file="
+                + _github_property(
+                    _display_path(finding.path, report.repository.root).replace("\\", "/")
+                )
+            )
+        if finding.line:
+            properties.append(f"line={finding.line}")
+        properties.append(f"title={_github_property(finding.code)}")
+        message = f"{finding.title}: {finding.message}"
+        if finding.remediation:
+            message += f" Next: {finding.remediation}"
+        lines.append(
+            f"::{levels[finding.severity]} {','.join(properties)}::{_github_data(message)}"
+        )
+    counts = report.counts
+    lines.append(
+        "git-hook-doctor: "
+        f"{counts['error']} errors, {counts['warning']} warnings, {counts['info']} info; "
+        "read-only, no hooks executed"
+    )
+    return "\n".join(lines) + "\n"
+
+
+def _github_data(value: str) -> str:
+    return value.replace("%", "%25").replace("\r", "%0D").replace("\n", "%0A")
+
+
+def _github_property(value: str) -> str:
+    return _github_data(value).replace(":", "%3A").replace(",", "%2C")
+
+
 def render(report: Report, format_name: str, *, color: bool = False) -> str:
     if format_name == "text":
         return text_report(report, color=color)
@@ -225,4 +265,6 @@ def render(report: Report, format_name: str, *, color: bool = False) -> str:
         return markdown_report(report)
     if format_name == "sarif":
         return sarif_report(report)
+    if format_name == "github":
+        return github_report(report)
     raise ValueError(f"Unsupported report format: {format_name}")

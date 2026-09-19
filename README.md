@@ -53,7 +53,12 @@ Machine-readable reports are built in:
 git-hook-doctor check --format json --output hook-report.json
 git-hook-doctor check --format sarif --output hook-report.sarif
 git-hook-doctor check --format markdown --output hook-report.md
+git-hook-doctor check --format github
 ```
+
+`github` emits native workflow-command annotations for a CI log. It is useful
+when a full SARIF upload is not needed; both formats remain read-only and hook
+bodies are never copied into the annotation.
 
 Run it against any repository without changing directories:
 

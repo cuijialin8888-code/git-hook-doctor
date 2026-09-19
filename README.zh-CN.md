@@ -42,9 +42,11 @@ git-hook-doctor check
 # 只检查点名事件
 git-hook-doctor check pre-commit commit-msg pre-push
 
-# 输出 JSON / SARIF / Markdown
+# 输出 JSON / SARIF / Markdown / GitHub Actions 注释
 git-hook-doctor check --format sarif --output hook-report.sarif
 ```
+
+也可以使用 `git-hook-doctor check --format github` 输出 GitHub Actions 原生工作流命令注释；它仍然只读，也不会把 hook 正文复制到注释中。
 
 如果电脑上有多个 Git，可用 `--git <路径>` 指定 IDE 或其他客户端实际使用的 Git 二进制。
 
