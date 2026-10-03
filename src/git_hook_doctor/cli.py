@@ -98,7 +98,7 @@ def _validate_output(output: Path, report: Report) -> None:
             protected.append(path if path.is_absolute() else repository.root / path)
     if candidate in {path.resolve() for path in protected}:
         raise ValueError("report output cannot replace an inspected hook or configuration file")
-    if any(path.is_symlink() for path in (output, *output.parents)):
+    if output.is_symlink():
         raise ValueError("report output cannot follow symbolic links")
 
 
