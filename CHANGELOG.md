@@ -4,6 +4,8 @@ All notable changes use [Keep a Changelog](https://keepachangelog.com/en/1.1.0/)
 
 ## [Unreleased]
 
+- Protect Git metadata, effective hook directories, inspected hooks/configuration, and symbolic links from report output.
+
 ### Added
 
 - An evidence-first workflow for traditional and configured hook diagnosis.

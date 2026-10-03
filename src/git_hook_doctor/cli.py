@@ -7,7 +7,7 @@ from pathlib import Path
 from . import __version__
 from .doctor import diagnose
 from .git import GitInvocationError
-from .models import Severity
+from .models import Report, Severity
 from .reporters import render
 
 
@@ -80,6 +80,28 @@ def _threshold(value: str) -> Severity | None:
     return None if value == "never" else Severity.parse(value)
 
 
+def _validate_output(output: Path, report: Report) -> None:
+    candidate = output.expanduser().resolve()
+    repository = report.repository
+    directories = (repository.git_dir, repository.common_dir, repository.hooks_dir)
+    if any(candidate == path.resolve() or path.resolve() in candidate.parents for path in directories):
+        raise ValueError("report output must be outside Git metadata and hook directories")
+    protected = [repository.root / ".git"]
+    protected.extend(hook.path for hook in report.hooks if hook.path is not None)
+    protected.extend(finding.path for finding in report.findings if finding.path is not None)
+    origins = [hook.origin for hook in report.hooks]
+    if report.core_hooks_path:
+        origins.append(report.core_hooks_path.origin)
+    for origin in origins:
+        if origin and origin.startswith("file:"):
+            path = Path(origin[5:])
+            protected.append(path if path.is_absolute() else repository.root / path)
+    if candidate in {path.resolve() for path in protected}:
+        raise ValueError("report output cannot replace an inspected hook or configuration file")
+    if any(path.is_symlink() for path in (output, *output.parents)):
+        raise ValueError("report output cannot follow symbolic links")
+
+
 def main(argv: list[str] | None = None) -> int:
     parser = build_parser()
     args = parser.parse_args(argv)
@@ -96,8 +118,10 @@ def main(argv: list[str] | None = None) -> int:
     content = render(report, args.format, color=use_color)
     if args.output:
         try:
+            args.output = args.output.expanduser()
+            _validate_output(args.output, report)
             args.output.write_text(content, encoding="utf-8", newline="\n")
-        except OSError as exc:
+        except (OSError, ValueError) as exc:
             print(f"git-hook-doctor: could not write {args.output}: {exc}", file=sys.stderr)
             return 1
     else:
