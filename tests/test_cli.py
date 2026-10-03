@@ -11,6 +11,38 @@ from support import GitRepositoryTestCase
 
 
 class CliTests(GitRepositoryTestCase):
+    def test_report_cannot_follow_a_symbolic_link_to_an_external_file(self) -> None:
+        protected = Path(self._temporary.name) / "original.txt"
+        protected.write_bytes(b"preserve")
+        output = Path(self._temporary.name) / "linked-report.json"
+        try:
+            output.symlink_to(protected)
+        except OSError:
+            self.skipTest("symbolic links unavailable")
+        with redirect_stderr(io.StringIO()):
+            self.assertEqual(main(["check", "--repo", str(self.repo), "--output", str(output)]), 1)
+        self.assertEqual(protected.read_bytes(), b"preserve")
+
+    def test_report_cannot_replace_hook_or_git_config(self) -> None:
+        hook = self.write_hook("pre-commit", b"#!/bin/sh\nexit 0\n")
+        for output in (hook, self.repo / ".git" / "config"):
+            before = output.read_bytes()
+            with redirect_stderr(io.StringIO()):
+                code = main(["check", "--repo", str(self.repo), "--output", str(output)])
+            self.assertEqual(code, 1)
+            self.assertEqual(output.read_bytes(), before)
+
+    def test_report_protects_custom_hooks_and_allows_a_regular_report(self) -> None:
+        custom = self.repo / "custom-hooks"
+        hook = self.write_hook("pre-commit", b"#!/bin/sh\nexit 0\n", directory=custom)
+        self.git("config", "core.hooksPath", str(custom))
+        before = hook.read_bytes()
+        with redirect_stderr(io.StringIO()):
+            self.assertEqual(main(["check", "--repo", str(self.repo), "--output", str(hook)]), 1)
+        self.assertEqual(hook.read_bytes(), before)
+        with redirect_stdout(io.StringIO()):
+            self.assertEqual(main(["check", "--repo", str(self.repo), "--output", str(self.repo / "report.json"), "--format", "json"]), 0)
+
     def test_check_empty_repository_succeeds(self) -> None:
         with redirect_stdout(io.StringIO()):
             code = main(["check", "--repo", str(self.repo), "--color", "never"])

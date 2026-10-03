@@ -165,3 +165,8 @@ Small, evidence-backed rules are welcome. A new rule needs a reproducible fixtur
 ## License
 
 MIT © 2026 Jialin Cui
+
+## Protect inspected files when exporting reports
+
+On `main` (unreleased), `--output` refuses destinations in the repository's Git metadata or effective hook directory, inspected hooks and configuration files, and symbolic-link destinations. The check also covers linked-worktree Git metadata and custom `core.hooksPath` directories. A normal report path such as `--output report.json` remains supported. Refused writes return the existing runtime-error exit code 1 and leave the destination unchanged.
+
