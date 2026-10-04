@@ -4,6 +4,7 @@ All notable changes use [Keep a Changelog](https://keepachangelog.com/en/1.1.0/)
 
 ## [Unreleased]
 
+- Encode SARIF artifact locations as URI references, preserving special characters and Unicode paths; use file URIs for hooks outside the repository.
 - Protect Git metadata, effective hook directories, inspected hooks/configuration, and symbolic links from report output.
 - Reject report output to existing files with multiple hard links to prevent overwriting hooks or Git metadata through another filename.
 

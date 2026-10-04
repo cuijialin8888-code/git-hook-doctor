@@ -12,6 +12,20 @@ from support import GitRepositoryTestCase
 
 
 class CliTests(GitRepositoryTestCase):
+    def test_sarif_locates_hook_in_custom_directory_with_special_characters(self) -> None:
+        # Git canonicalizes temporary-directory aliases on Windows and macOS.
+        custom = Path(self.git("rev-parse", "--show-toplevel")) / "hooks space % #"
+        self.write_hook("pre-commit", b"#!/bin/sh\r\nexit 0\r\n", directory=custom)
+        self.git("config", "core.hooksPath", str(custom))
+        output = io.StringIO()
+        with redirect_stdout(output):
+            code = main(["check", "--repo", str(self.repo), "--format", "sarif"])
+        self.assertEqual(2, code)
+        results = json.loads(output.getvalue())["runs"][0]["results"]
+        finding = next(result for result in results if result["ruleId"] == "GHD010")
+        uri = finding["locations"][0]["physicalLocation"]["artifactLocation"]["uri"]
+        self.assertEqual("hooks%20space%20%25%20%23/pre-commit", uri)
+
     def _assert_report_rejects_hard_link(self, protected: Path) -> None:
         before = protected.read_bytes()
         output = Path(self._temporary.name) / "hard-linked-report.json"
