@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import json
 import io
+import os
 from pathlib import Path
 from contextlib import redirect_stderr, redirect_stdout
 
@@ -11,6 +12,28 @@ from support import GitRepositoryTestCase
 
 
 class CliTests(GitRepositoryTestCase):
+    def _assert_report_rejects_hard_link(self, protected: Path) -> None:
+        before = protected.read_bytes()
+        output = Path(self._temporary.name) / "hard-linked-report.json"
+        try:
+            os.link(protected, output)
+        except OSError:
+            self.skipTest("hard links unavailable")
+        stderr = io.StringIO()
+        with redirect_stderr(stderr):
+            code = main(["check", "--repo", str(self.repo), "--output", str(output)])
+        self.assertEqual(protected.read_bytes(), before)
+        self.assertEqual(output.read_bytes(), before)
+        self.assertEqual(code, 1)
+        self.assertIn("hard links", stderr.getvalue())
+
+    def test_report_cannot_replace_a_hard_link_to_a_hook(self) -> None:
+        hook = self.write_hook("pre-commit", b"#!/bin/sh\nexit 0\n")
+        self._assert_report_rejects_hard_link(hook)
+
+    def test_report_cannot_replace_a_hard_link_to_git_config(self) -> None:
+        self._assert_report_rejects_hard_link(self.repo / ".git" / "config")
+
     def test_report_cannot_follow_a_symbolic_link_to_an_external_file(self) -> None:
         protected = Path(self._temporary.name) / "original.txt"
         protected.write_bytes(b"preserve")
