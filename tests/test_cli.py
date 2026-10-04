@@ -13,7 +13,8 @@ from support import GitRepositoryTestCase
 
 class CliTests(GitRepositoryTestCase):
     def test_sarif_locates_hook_in_custom_directory_with_special_characters(self) -> None:
-        custom = self.repo / "hooks space % #"
+        # Git canonicalizes temporary-directory aliases on Windows and macOS.
+        custom = Path(self.git("rev-parse", "--show-toplevel")) / "hooks space % #"
         self.write_hook("pre-commit", b"#!/bin/sh\r\nexit 0\r\n", directory=custom)
         self.git("config", "core.hooksPath", str(custom))
         output = io.StringIO()
