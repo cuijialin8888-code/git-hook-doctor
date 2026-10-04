@@ -100,6 +100,8 @@ def _validate_output(output: Path, report: Report) -> None:
         raise ValueError("report output cannot replace an inspected hook or configuration file")
     if output.is_symlink():
         raise ValueError("report output cannot follow symbolic links")
+    if output.exists() and output.stat().st_nlink > 1:
+        raise ValueError("report output cannot replace files with multiple hard links")
 
 
 def main(argv: list[str] | None = None) -> int:
