@@ -3,6 +3,7 @@ from __future__ import annotations
 import json
 from pathlib import Path
 from typing import Any
+from urllib.parse import quote
 
 from . import __version__
 from .models import Finding, Report, Severity
@@ -153,7 +154,16 @@ def markdown_report(report: Report) -> str:
 def _sarif_location(finding: Finding, root: Path) -> list[dict[str, Any]]:
     if finding.path is None:
         return []
-    uri = _display_path(finding.path, root).replace("\\", "/")
+    try:
+        relative_path = finding.path.relative_to(root)
+    except ValueError:
+        uri = (
+            finding.path.as_uri()
+            if finding.path.is_absolute()
+            else quote(finding.path.as_posix(), safe="/")
+        )
+    else:
+        uri = quote(relative_path.as_posix(), safe="/")
     location: dict[str, Any] = {"artifactLocation": {"uri": uri}}
     if finding.line:
         location["region"] = {"startLine": finding.line}
